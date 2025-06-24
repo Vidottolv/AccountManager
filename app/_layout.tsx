@@ -1,4 +1,6 @@
 import colors from '@/assets/colors/colors';
+import { LanguageProvider, useLanguage } from '@/assets/context/LangContext';
+import i18n from '@/assets/locales/I18n';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useFonts } from 'expo-font';
@@ -31,42 +33,62 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <GestureHandlerRootView 
-      style={{flex:1, backgroundColor:colors.background}}>
-      <Drawer
-        drawerContent={CustomDrawerContent} 
-        screenOptions={{
-        drawerActiveTintColor:colors.textPrimary,
-        drawerStyle: { backgroundColor: colors.background },
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.textPrimary, 
-        drawerInactiveTintColor: colors.textPrimary
-      }}>
-        <Drawer.Screen 
-          name="index" 
-          options={{
-            drawerLabel:'Home',
-            title:'My App',
-            drawerIcon:({color,size}) => (
-              <Ionicons name="home" size={size} color={color} />
-          ),
-        }}/>
-        <Drawer.Screen name="news" options={{
-          drawerLabel:'News',
-          title:'News',
-          drawerIcon:({color,size}) => (
-          <Ionicons name="newspaper" size={size} color={color} />
-          ),
-        }}/>
-        <Drawer.Screen
-          name='[id]'
-          options={{
-            drawerItemStyle: {
-              display:'none'
-            }
-          }}
-        />
-      </Drawer>
-    </GestureHandlerRootView>
-);
+    <LanguageProvider>
+      <InnerLayout/>
+    </LanguageProvider>
+  );
+}
+
+function InnerLayout(){
+  const { language } = useLanguage();
+  return (
+      <GestureHandlerRootView 
+        style={{flex:1, backgroundColor:colors.background}}>
+        <Drawer
+          drawerContent={CustomDrawerContent} 
+          screenOptions={{
+          drawerActiveTintColor:colors.textPrimary,
+          drawerStyle: { backgroundColor: colors.background },
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.textPrimary, 
+          drawerInactiveTintColor: colors.textPrimary
+        }}>
+          <Drawer.Screen 
+            name="index" 
+            options={{
+              drawerLabel:i18n.t("receipts"),
+              title:i18n.t("receipts"),
+              drawerIcon:({color,size}) => (
+                <Ionicons name="home" size={size} color={color} />
+              ),
+          }}/>
+          <Drawer.Screen 
+            name="addSale" 
+            options={{
+              drawerLabel:i18n.t("addSale"),
+              title:i18n.t("addSale"),
+              drawerIcon:({color,size}) => (
+                <Ionicons name="cash-outline" size={size} color={color} />
+              ),
+          }}/>
+          <Drawer.Screen 
+            name="config" 
+            options={{
+              drawerLabel:i18n.t("Settings"),
+              title:i18n.t("Settings"),
+              drawerIcon:({color,size}) => (
+                <Ionicons name="cog-outline" size={size} color={color} />
+              ),
+          }}/>
+          <Drawer.Screen
+            name='[id]'
+            options={{
+              drawerItemStyle: {
+                display:'none'
+              }
+            }}
+          />
+        </Drawer>
+      </GestureHandlerRootView>
+  );
 }
