@@ -8,6 +8,7 @@ import { Drawer } from "expo-router/drawer";
 import React from "react";
 import { View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Login from './login';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   return (
@@ -29,10 +30,19 @@ export default function RootLayout() {
     'ubuntu-medium': require('@/assets/fonts/Ubuntu-Medium.ttf'),
     'ubuntu-bold': require('@/assets/fonts/Ubuntu-Bold.ttf'),
   });
+  const [logged, setLogged] = React.useState(false); // controle de login
+
   if (!fontsLoaded) {
     return null;
   }
+  if(!logged){
   return (
+    <LanguageProvider>
+      <Login onLogin={() => setLogged(true)}/>
+    </LanguageProvider>
+  );
+  }
+    return (
     <LanguageProvider>
       <InnerLayout/>
     </LanguageProvider>
