@@ -1,6 +1,8 @@
 import colors from "@/assets/colors/colors";
 import i18n from "@/assets/locales/I18n";
 import CustomInput from "@/components/input";
+import { login } from "@/services/login";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -8,23 +10,32 @@ const {height, width} = Dimensions.get('window');
 
 export default function Login(
     { onLogin }: { onLogin: () => void }){
-    
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    async function handleLogin() {
+        try {
+            const data = await login(username, password);
+            await AsyncStorage.setItem('token', data.token);
+            onLogin();
+        } catch (error) {
+            alert('Erro ao fazer login');
+        }
+    }
 
     return (
         <View style={styles.container}>
             <Text style={styles.mainText}>
-                    Faça login para continuar
+                Faça login para continuar
             </Text>
             <View style={styles.inputs}>
                 <CustomInput
                     height={height * 0.08}
                     width={width * 0.8}
                     inputMode="text"
-                    value={email}
-                    onChangeText={(text) => setEmail(text)}
-                    placeholder={i18n.t("email")}/>
+                    value={username}
+                    onChangeText={(text) => setUsername(text)}
+                    placeholder={i18n.t("username")}/>
                 <CustomInput
                     height={height * 0.08}
                     width={width * 0.8}
@@ -35,7 +46,7 @@ export default function Login(
             </View>
             <TouchableOpacity  
                 style={styles.button}
-                onPress={onLogin}>
+                onPress={handleLogin}>
                     <Text style={styles.enterText}>Entrar</Text>
             </TouchableOpacity>
             <View style={styles.rowButton}>

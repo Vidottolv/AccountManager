@@ -13,5 +13,6 @@ export default {
   productName: "Nome do Produto",
   save: "Salvar",
   email: "Insira seu email",
-  password: "Insira sua senha"
+  password: "Insira sua senha",
+  username: "Nome de usuário"
 };

@@ -1,10 +1,15 @@
 import colors from "@/assets/colors/colors";
 import Grid from "@/components/grid";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 import { Dimensions, StyleSheet, View } from "react-native";
+import { FAB } from 'react-native-elements';
+
 
 const { width, height } = Dimensions.get('window');
 
 export default function Index() {
+  const router = useRouter()
   return (
     <View style={styles.container}>
       <Grid
@@ -21,6 +26,17 @@ export default function Index() {
         width={width * 0.9}
         height={height * 0.45}
         placeholder="Ultimas Vendas"
+      />
+      <FAB 
+          placement="right"
+          color={colors.buttonPrimary}
+          size="large"
+          icon={
+            <Ionicons 
+              name="add" 
+              size={24} 
+              color="#fff" />}
+          onPress={() => router.push('/addSale')}
       />
     </View>
   );

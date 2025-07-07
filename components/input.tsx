@@ -5,6 +5,9 @@ interface IProps {
     height: number;
     width: number;
     placeholder: string;
+    value?: string | number;
+    onChangeText?: (text: string) => void;
+    inputMode: 'numeric' | 'decimal' | 'text' | 'email'
 }
 
 const CustomInput = (props: IProps) => {
@@ -18,10 +21,13 @@ const CustomInput = (props: IProps) => {
         <TextInput  
             style={{
                 color: colors.textPrimary,
-                fontSize: 16}}
+                fontSize: 16,
+                fontFamily:'ubuntu-regular'}}
             placeholder={props.placeholder}
-            inputMode='numeric'
-            placeholderTextColor={colors.textPrimary}>
+            inputMode={props.inputMode}
+            placeholderTextColor={colors.textPrimary}
+            value={props.value !== undefined ? String(props.value) : undefined}
+            onChangeText={props.onChangeText}>
         </TextInput>
     </View>
     )
