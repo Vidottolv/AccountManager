@@ -1,6 +1,6 @@
 import colors from '@/assets/colors/colors';
 import { LanguageProvider, useLanguage } from '@/assets/context/LangContext';
-import { PreferencesProvider } from '@/assets/context/PreferencesContext';
+// import { PreferencesProvider } from '@/assets/context/PreferencesContext';
 import i18n from '@/assets/locales/I18n';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
@@ -38,19 +38,15 @@ export default function RootLayout() {
   }
   if(!logged){
   return (
-    <LanguageProvider>
-      <PreferencesProvider>
+      <LanguageProvider>
         <Login onLogin={() => setLogged(true)}/>
-      </PreferencesProvider>
-    </LanguageProvider>
+      </LanguageProvider>
   );
   }
     return (
-    <LanguageProvider>
-      <PreferencesProvider>
+      <LanguageProvider>
         <InnerLayout/>
-      </PreferencesProvider>
-    </LanguageProvider>
+      </LanguageProvider>
   );
 }
 

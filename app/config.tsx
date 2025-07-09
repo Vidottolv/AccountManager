@@ -1,21 +1,21 @@
 import colors from '@/assets/colors/colors';
 import { useLanguage } from '@/assets/context/LangContext';
-import { usePreferences } from '@/assets/context/PreferencesContext';
 import i18n from '@/assets/locales/I18n';
 import CustomInput from '@/components/input';
 import { getPreferences, postPreferences, updatePreferences } from '@/services/preferences';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const {height, width} = Dimensions.get('window');
+let preference: string | null;
 
 const Config = () => {
   const [open, setOpen] = useState(false); 
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const { setLanguage } = useLanguage(); 
   const [hasPreferences, setHasPreferences] = useState(false);
-  const { preferences, setPreferences } = usePreferences();
   const [commission, setCommission] = useState<number>(0);
   const [items, setItems] = useState([
     {
@@ -43,14 +43,9 @@ const Config = () => {
     async function fetchPreferences() {
       try {
         const data = await getPreferences();
-        console.log(data)
+        // console.log(data)
         if (data && data.length > 0) {
           setHasPreferences(true);
-          setPreferences({
-            commission: data[0].commission,
-            language: data[0].language,
-            id: data[0]._id
-          });
           setCommission(data[0].commission);
           setSelectedLanguage(data[0].language);
           setLanguage(data[0].language);
@@ -65,7 +60,7 @@ const Config = () => {
   }, []);
 
   async function handleSave() {
-    console.log(commission, selectedLanguage)
+    // console.log(commission, selectedLanguage)
     try {
       if (!commission || !selectedLanguage) {
         alert('Preencha todos os campos');
@@ -75,32 +70,27 @@ const Config = () => {
         await updatePreferences( 
           Number(commission), 
           selectedLanguage,
-          preferences.id
+          preference?.[0]._id
         );
       } else {
-        console.log('indo para post')
+        // console.log('indo para post')
         await postPreferences( 
           Number(commission), 
           selectedLanguage);
       }
-      setPreferences({
-        commission: commission,
-        language: selectedLanguage,
-      });
       alert('Preferências salvas!');
     } catch (error) {
       console.log(error)
       alert('Erro ao salvar preferências');
     }
   }
-
   useEffect(() => {
-    if (preferences) {
-      console.log(preferences.commission, preferences.language)
-      setCommission(preferences.commission);
-      setSelectedLanguage(preferences.language);
-    }
-  }, [preferences]);
+  async function loadPreference() {
+      const preferenceString = await AsyncStorage.getItem('preference');
+      preference = preferenceString ? JSON.parse(preferenceString) : null;
+  }
+  loadPreference();
+}, []);
 
   return (
     <View style={styles.container}>

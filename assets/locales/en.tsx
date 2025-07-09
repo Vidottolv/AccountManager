@@ -14,5 +14,7 @@ export default {
   save: "Save",
   email: "Insert your email",
   password: "Insert your password",
-  username: "Your Username"
+  username: "Your Username",
+  product: "Product",
+  insertNewCustomer: "Insert the new Customer"
 };

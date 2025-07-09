@@ -17,6 +17,7 @@ export default function Login(
         try {
             const data = await login(username, password);
             await AsyncStorage.setItem('token', data.token);
+            await AsyncStorage.setItem('preference', JSON.stringify(data.preference));
             onLogin();
         } catch (error) {
             alert('Erro ao fazer login');

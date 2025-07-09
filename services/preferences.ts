@@ -6,7 +6,6 @@ export async function getPreferences() {
 }
 
 export async function postPreferences(commission: number, language: string) {
-    console.log('no response')
     const response = await api.post('/preferences', {commission, language});
     return response.data;
 }

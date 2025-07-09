@@ -5,7 +5,7 @@ export default {
   Settings: "Configurações",
   addSale: "Nova venda",
   receipts: "Recebimentos",
-  customer: "Comprador",
+  customer: "Comprador/cliente",
   insertData: "Insira abaixo os dados da sua nova venda!",
   search: "Pesquise...",
   itemQuantity: "Quantidade vendida",
@@ -14,5 +14,7 @@ export default {
   save: "Salvar",
   email: "Insira seu email",
   password: "Insira sua senha",
-  username: "Nome de usuário"
+  username: "Nome de usuário",
+  product: "Produto",
+  insertNewCustomer:"Insira o novo cliente"
 };
