@@ -3,6 +3,7 @@ import i18n from "@/assets/locales/I18n";
 import CustomDropdown from "@/components/dropdown";
 import CustomInput from "@/components/input";
 import NewProductModal from "@/components/modalProduct";
+import { SaleFormType, saleFormSchema } from "@/schema/saleSchema";
 import { getCustomer } from "@/services/customers";
 import { getProducts } from "@/services/products";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,21 +12,26 @@ import { ActivityIndicator, Dimensions, StyleSheet, Text, TouchableOpacity, View
 import { IDropdownRef } from 'react-native-element-dropdown';
 
 const {height, width} = Dimensions.get('window');
-let preference: string | null;
 
 const Sale = () => {
-    const [product, setProduct] = useState<string>();
-    const [productSearch, setProductSearch] = useState('');
-    const [newProductName, setNewProductName] = useState('');
-    const [customer, setCustomer] = useState<string>();
-    const [customerSearch, setCustomerSearch] = useState('');
+    const [form, setForm] = useState<SaleFormType>({
+      product: '',
+      productSearch: '',
+      newProductName: '',
+      customer: '',
+      customerSearch: '',
+      commission: 0,
+      qty: '0'
+    });
     const [modalVisible, setModalVisible] = useState(false);
-    const [commission, setCommission] = useState(0);
-    const [qty, setQty] = useState<string>('0');
     const [products, setProducts] = useState<any[]>([]);
     const [customers, setCustomers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const ref = useRef<IDropdownRef>(null!) as React.RefObject<IDropdownRef>;
+
+    function updateForm<K extends keyof SaleFormType>(key: K, value: SaleFormType[K]) {
+      setForm(prev => ({ ...prev, [key]: value }));
+    }
 
     async function fetchData() {
         try {
@@ -44,59 +50,77 @@ const Sale = () => {
     }, []);
 
     useEffect(() => {
-         async function loadPreference() {
-            const preferenceString = await AsyncStorage.getItem('preference');
-            preference = preferenceString ? JSON.parse(preferenceString) : null;
+      async function loadPreference() {
+        const preferenceString = await AsyncStorage.getItem('preference');
+        const pref = preferenceString ? JSON.parse(preferenceString) : null;
+    
+        if (pref?.[0]?.commission != null) {
+          updateForm('commission', pref[0].commission);
         }
-        loadPreference();
+      }
+      loadPreference();
     }, []);
 
-    const productOptions = !loading
-        ? products.map(prod => ({
-            label: prod.productName,
-            value: prod._id,
-        })) : [];
 
-    const customerOptions = !loading
-        ? customers.map(prod => ({
-            label: prod.name,
-            value: prod._id,
-        })) : [];
+    const productOptions = products.map((prod) => ({
+      label: prod.productName,
+      value: prod._id,
+    }));
 
-    const ProductfilteredData = !loading
-        ? productOptions.filter(item =>
-            item.label.toLowerCase().includes(productSearch.toLowerCase())
-        ) : [];
+    const customerOptions = customers.map((prod) => ({
+      label: prod.name,
+      value: prod._id,
+    }));
 
-    const CusomterfilteredData = !loading
-        ? customerOptions.filter(item =>
-            item.label.toLowerCase().includes(customerSearch.toLowerCase())
-        ) : [];
+    const filteredProducts = productOptions.filter((item) =>
+      item.label.toLowerCase().includes(form.productSearch.toLowerCase())
+    );
 
-    const productData = !loading
-        ? (productSearch.length > 0
-            ? [{
-                label: `${i18n.t("insertNewProduct")} "${productSearch}"`,
-                value: "__new_product__",
-                isNew: true
-              }, ...ProductfilteredData]
-            : productOptions) : [];
+    const filteredCustomers = customerOptions.filter((item) =>
+      item.label.toLowerCase().includes(form.customerSearch.toLowerCase())
+    );
 
-    const customerData = !loading
-        ? (customerSearch.length > 0
-            ? [{
-                label: `${i18n.t("insertNewCustomer")} "${customerSearch}"`,
-                value: "__new_customer__",
-                isNew: true
-              }, ...CusomterfilteredData]
-            : customerOptions) : [];
+    const productData =
+      form.productSearch.length > 0
+        ? [
+            {
+              label: `${i18n.t("insertNewProduct")} "${form.productSearch}"`,
+              value: "__new_product__",
+              isNew: true,
+            },
+            ...filteredProducts,
+          ]
+        : productOptions;
+
+    const customerData =
+      form.customerSearch.length > 0
+        ? [
+            {
+              label: `${i18n.t("insertNewCustomer")} "${form.customerSearch}"`,
+              value: "__new_customer__",
+              isNew: true,
+            },
+            ...filteredCustomers,
+          ]
+        : customerOptions;
+
+    function handleSave() {
+      const result = saleFormSchema.safeParse(form);
+      if (!result.success) {
+        alert(result.error.issues[0]?.message ?? "Erro no formulário");
+        return;
+      }
+
+      const data = result.data;
+      alert("Venda salva com sucesso!");
+    }
 
     if (loading) {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator size="large" color={colors.buttonPrimary} />
-            </View>
-        );
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color={colors.buttonPrimary} />
+        </View>
+      );
     }
 
     return (
@@ -106,30 +130,34 @@ const Sale = () => {
                 {i18n.t("product")}
             </Text>
             <CustomDropdown
-              refDropdown={ref}
-              data={productData}
-              value={product}
-              search={productSearch}
-              setSearch={setProductSearch}
-              onChange={(item) => {
-                if (item.value === "__new_product__") {
-                    setNewProductName(productSearch);
+                refDropdown={ref}
+                data={productData}
+                value={form.product}
+                search={form.productSearch}
+                setSearch={(val) => updateForm('productSearch', val)}
+                onChange={(item) => {
+                  if (item.value === "__new_product__") {
+                    updateForm('newProductName', form.productSearch);
                     setModalVisible(true);
                     ref.current?.close();
-                } else {
-                    setProduct(item.value);
-                }
-              }}/>
+                  } else {
+                    updateForm('product', item.value);
+                  }
+                }}/>
             <Text style={styles.textCommission}>
                 {i18n.t("commissionPlaceholder")}
             </Text>
             <CustomInput
-                height={height * 0.08}
-                width={width * 0.9}
-                inputMode="text"
-                placeholder={i18n.t("commissionPlaceholder")}
-                value={preference?.[0].commission === null ? commission : preference?.[0].commission}
-                onChangeText={(text) => setCommission(parseFloat(text))}/>
+              height={height * 0.08}
+              width={width * 0.9}
+              inputMode="text"
+              placeholder={i18n.t("commissionPlaceholder")}
+              value={form.commission === 0 ? '' : form.commission.toString()}
+              onChangeText={(text) => {
+                const number = parseFloat(text.replace(',', '.'));
+                updateForm('commission', isNaN(number) ? 0 : number);
+              }}
+            />
             <Text style={styles.textCommission}>
                 {i18n.t("itemQuantity")}
             </Text>
@@ -138,24 +166,24 @@ const Sale = () => {
                 width={width * 0.9}
                 inputMode="numeric"
                 placeholder={i18n.t("itemQuantity")}
-                value={qty}
-                onChangeText={setQty}/>
+                value={form.qty}
+                onChangeText={(val) => updateForm("qty", val)}/>
             <Text style={styles.textCommission}>
                 {i18n.t("customer")}
             </Text>
-            <NewProductModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                defaultName={newProductName}/> 
             <CustomDropdown
               refDropdown={ref}
               data={customerData}
-              value={customer}
-              search={customerSearch}
-              setSearch={setCustomerSearch}
-              onChange={(item) => { 
-                  setCustomer(item.value);
-              }}/>
+              value={form.customer}
+              search={form.customerSearch}
+              setSearch={(val) => updateForm("customerSearch", val)}
+              onChange={(item) => updateForm("customer", item.value)}/>
+
+            <NewProductModal
+              visible={modalVisible}
+              onClose={() => setModalVisible(false)}
+              defaultName={form.newProductName}/>
+
             <TouchableOpacity style={styles.button}>
                 <Text style={styles.textButton}>
                     Salvar
