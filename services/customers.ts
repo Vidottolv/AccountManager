@@ -5,3 +5,8 @@ export async function getCustomer() {
   // console.log(response.data)
   return response.data;
 }
+
+export async function insertCustomer(name: string) {
+  const response = await api.post('/customer', { name });
+  return response.data;
+}

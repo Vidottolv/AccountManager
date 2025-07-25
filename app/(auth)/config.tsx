@@ -23,7 +23,7 @@ const Config = () => {
       value: 'pt',
       icon: () => (
         <Image
-          source={require('../assets/images/br.png')}
+          source={require('../../assets/images/br.png')}
           style={{ width: 36, height: 24, marginRight: 24 }}
           resizeMode="contain"/>
       )
@@ -33,7 +33,7 @@ const Config = () => {
       value: 'en',
       icon: () => (
         <Image
-          source={require('../assets/images/us.png')}
+          source={require('../../assets/images/us.png')}
           style={{ width: 36, height: 24, marginRight: 24 }}
           resizeMode="contain"/>
       )

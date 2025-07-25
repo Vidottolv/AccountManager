@@ -3,8 +3,10 @@ import i18n from "@/assets/locales/I18n";
 import CustomInput from "@/components/input";
 import { login } from "@/services/login";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { usePathname, useRouter } from "expo-router";
 import { useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useToast } from "react-native-toast-notifications";
 
 const {height, width} = Dimensions.get('window');
 
@@ -12,15 +14,41 @@ export default function Login(
     { onLogin }: { onLogin: () => void }){
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
+    const pathname = usePathname();
+    const toast = useToast();
+    const time = 2000;
 
     async function handleLogin() {
         try {
             const data = await login(username, password);
             await AsyncStorage.setItem('token', data.token);
             await AsyncStorage.setItem('preference', JSON.stringify(data.preference));
-            onLogin();
+            toast.show("Login efetuado com sucesso.", {
+                type: "success",
+                placement: "top",
+                duration: time,
+            });
+            setTimeout(() => {
+                onLogin();    
+            }, time);
+            
         } catch (error) {
-            alert('Erro ao fazer login');
+            console.log(error)
+            toast.show(error, {
+                type: "error",
+                placement: "top",
+                duration: time
+            })
+        }
+    }
+
+    async function handleNewUser() {
+        try {
+            console.log(pathname)
+            router.push('/user')
+        } catch (err) {
+            console.log(err)
         }
     }
 
@@ -43,7 +71,8 @@ export default function Login(
                     inputMode="text"
                     value={password}
                     onChangeText={(text) => setPassword(text)}
-                    placeholder={i18n.t("password")}/>
+                    placeholder={i18n.t("password")}
+                    passwd={true}/>
             </View>
             <TouchableOpacity  
                 style={styles.button}
@@ -51,10 +80,13 @@ export default function Login(
                     <Text style={styles.enterText}>Entrar</Text>
             </TouchableOpacity>
             <View style={styles.rowButton}>
-                <TouchableOpacity style={styles.buttons}>
+                <TouchableOpacity
+                    onPress={handleNewUser} 
+                    style={styles.buttons}>
                     <Text style={styles.text}>Novo usuário</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttons}>
+                <TouchableOpacity 
+                    style={styles.buttons}>
                     <Text style={styles.text}>Recuperar senha</Text>
                 </TouchableOpacity>
             </View>

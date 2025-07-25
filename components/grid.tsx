@@ -5,6 +5,8 @@ interface IProps {
     height: number;
     width: number;
     placeholder: string;
+    mainValue: string;
+    isMoney?: boolean;
 }
 
 const Grid = (props: IProps) => {
@@ -17,7 +19,7 @@ const Grid = (props: IProps) => {
         padding: 15 }}>
         <Text style={{
             color: colors.textPrimary,
-            fontSize: 16,
+            fontSize: 20,
             fontFamily: 'ubuntu-medium' }}>
             {props.placeholder}
         </Text>
@@ -27,7 +29,7 @@ const Grid = (props: IProps) => {
             fontFamily: 'ubuntu-bold',
             marginLeft:10,
             marginTop:10 }}>
-            R$2500,00
+            {props.isMoney && 'R$'}{props.mainValue}
         </Text>
     </View>
     )

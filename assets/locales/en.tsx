@@ -6,6 +6,7 @@ export default {
   addSale: "New sale",
   receipts: "Receipts",
   customer: "customer",
+  insertNewCustomer: "Insert the new Customer",
   insertData: "Enter your new sale details below!",
   search: "Search...",
   itemQuantity: "Quantity sold",
@@ -14,7 +15,12 @@ export default {
   save: "Save",
   email: "Insert your email",
   password: "Insert your password",
+  confPassword: "confirm password",
   username: "Your Username",
   product: "Product",
-  insertNewCustomer: "Insert the new Customer"
+  unitPrice: "Preço Unitário",
+  installemnts: "Installments?",
+  installmentQty: "Installments quantity",
+  expirationDate: "Expiration date",
+  soldPrice: "Sold Price"
 };

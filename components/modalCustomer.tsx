@@ -1,8 +1,8 @@
 import colors from '@/assets/colors/colors';
 import i18n from '@/assets/locales/I18n';
 import CustomInput from '@/components/input';
-import { modalProductType } from "@/schema/saleSchema";
-import { postProducts } from '@/services/products';
+import { modalCustomerType } from "@/schema/saleSchema";
+import { insertCustomer } from '@/services/customers';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import {
@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { useToast } from "react-native-toast-notifications";
+import { useToast } from 'react-native-toast-notifications';
 
 const { width, height } = Dimensions.get('window');
 
@@ -24,39 +24,38 @@ interface Props {
   onInserted: () => void;
 }
 
-const NewProductModal: React.FC<Props> = ({ visible, onClose, defaultName, onInserted }) => {
-  const [form, setForm] = useState<modalProductType>({
-    product: '',
+const NewCustomerModal: React.FC<Props> = ({ visible, onClose, defaultName, onInserted }) => {
+  const toast = useToast();
+  const [form, setForm] = useState<modalCustomerType>({
+    name: ''
   });
 
-  const toast = useToast();
-
-  function updateForm<K extends keyof modalProductType>(key: K, value: modalProductType[K]) {
+  function updateForm<K extends keyof modalCustomerType>(key: K, value: modalCustomerType[K]) {
     setForm(prev => ({ ...prev, [key]: value }));
   }
-  const time = 2000;
-
-      async function handleSave() {
-        try {
-          const response = await postProducts(form.product);      
-          toast.show(response.message || "Produto inserido com sucesso!", {
-            type: "success",
-            placement: "top",
-            duration: 1000});
-            await onInserted();
-            onClose();
-        } catch (error) {
-          toast.show("Erro ao adicionar produto", {
-            type: "danger",
-            placement: "top",
-            duration: 1000,
-        });
-        }
-      }
 
   React.useEffect(() => {
-    updateForm("product", defaultName);
+    updateForm("name", defaultName);
   }, [defaultName]);
+
+  async function handleSave() {
+    try {
+      const response = await insertCustomer(form.name);      
+      toast.show(response.message || "Cliente inserido com sucesso!", {
+        type: "success",
+        placement: "top",
+        duration: 1000});
+        await onInserted();
+        onClose();
+    } catch (error) {
+      toast.show("Erro ao adicionar cliente", {
+        type: "danger",
+        placement: "top",
+        duration: 1000,
+      });
+    }
+    
+  }
 
   return (
     <Modal
@@ -69,7 +68,7 @@ const NewProductModal: React.FC<Props> = ({ visible, onClose, defaultName, onIns
         
           <View style={styles.header}>
             <Text style={styles.mainText}>
-              {i18n.t("insertNewProduct")}
+              {i18n.t("insertNewCustomer")}
             </Text>
             <TouchableOpacity
               onPress={onClose}>
@@ -84,9 +83,9 @@ const NewProductModal: React.FC<Props> = ({ visible, onClose, defaultName, onIns
             height={height * 0.08}
             width={width * 0.7}
             inputMode="text"
-            placeholder={i18n.t("productName")}
-            value={form.product}
-            onChangeText={(val) => updateForm("product", val)}/>
+            placeholder={i18n.t("customer")}
+            value={form.name}
+            onChangeText={(val) => updateForm("name", val)}/>
           
           <TouchableOpacity
             style={styles.button}
@@ -141,4 +140,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default NewProductModal;
+export default NewCustomerModal;

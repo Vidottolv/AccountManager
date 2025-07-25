@@ -6,6 +6,7 @@ export default {
   addSale: "Nova venda",
   receipts: "Recebimentos",
   customer: "Comprador/cliente",
+  insertNewCustomer:"Insira o novo cliente",
   insertData: "Insira abaixo os dados da sua nova venda!",
   search: "Pesquise...",
   itemQuantity: "Quantidade vendida",
@@ -14,7 +15,12 @@ export default {
   save: "Salvar",
   email: "Insira seu email",
   password: "Insira sua senha",
+  confPassword: "confirme a senha",
   username: "Nome de usuário",
   product: "Produto",
-  insertNewCustomer:"Insira o novo cliente"
+  unitPrice: "Preço Unitário",
+  installments: "Parcelado?",
+  installmentQty: "Quantidade de parcelas",
+  expirationDate: "Data de vencimento",
+  soldPrice: "Valor vendido"
 };
