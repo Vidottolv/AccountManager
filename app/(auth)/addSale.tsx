@@ -80,7 +80,11 @@ const Sale = () => {
             setProducts(prod);
             setCustomers(cust);
         } catch (error) {
-            alert("Erro ao buscar produtos");
+          console.log(error)
+          toast.show("Erro ao buscar produtos", {
+            type: "danger",
+            placement: "top",
+            duration: 1000});
         } finally {
             setLoading(false); 
         }
@@ -155,8 +159,6 @@ const Sale = () => {
         commissionRate: form.commissionRate,
         dtTimestamp: new Date().toISOString(),
       };
-
-      console.log(saleData)
 
       const response = await postSales(saleData);
       toast.show(response.message || "Venda inserida com sucesso!", {

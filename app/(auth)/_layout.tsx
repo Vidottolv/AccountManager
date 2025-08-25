@@ -12,10 +12,20 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import Login from '../login';
 
 function CustomDrawerContent(props) {
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem('username').then(setUsername);
+  }, []);
+
   return (
     <DrawerContentScrollView {...props}>
-      <View style={{ padding: 16, alignItems: 'center' }}>
-        <Ionicons name="man" size={100} color={colors.buttonPrimary} />
+      <View style={{ padding: 10, alignItems: 'center' }}>
+        {username && (
+          <Text style={{ fontFamily: 'ubuntu-bold', fontSize: 20, marginTop: 8, color: colors.textPrimary }}>
+            Olá, {username}!
+          </Text>
+        )}
       </View>
       <DrawerItemList {...props} />
       <DrawerItem
@@ -24,7 +34,8 @@ function CustomDrawerContent(props) {
         icon={({ color, size }) => (
           <Ionicons name="exit-outline" size={size} color={colors.buttonSecondary} />
         )}
-        onPress={props.onLogout}/>
+        onPress={props.onLogout}
+      />
     </DrawerContentScrollView>
   );
 }
@@ -61,7 +72,9 @@ export default function AuthLayout() {
           normalColor={colors.toastNormal}
           textStyle={{ fontSize: 16 }}
           offset={60}>
-          <Login onLogin={() => setLogged(true)} />
+          <Login onLogin={() => {
+            setLogged(true)
+            console.log('onlogin chamando')}} />
         </ToastProvider>
       </LanguageProvider>
     );
@@ -127,6 +140,20 @@ export default function AuthLayout() {
                   </Text>
                 ),
                 drawerIcon: ({ color, size }) => <Ionicons name="cog-outline" size={size} color={color} />,
+              }}
+            />
+            <Drawer.Screen
+              name="details"
+              options={{
+                drawerItemStyle: {display: 'none'},
+                drawerLabel: i18n.t('Details'),
+                title: i18n.t('Details'),
+                headerTitle: () => (
+                  <Text style={{ fontFamily: 'ubuntu-bold', fontSize: 22, color: colors.textPrimary }}>
+                    {i18n.t('Details')}
+                  </Text>
+                ),
+                drawerIcon: ({ color, size }) => <Ionicons name="book-outline" size={size} color={color} />,
               }}
             />
           </Drawer>

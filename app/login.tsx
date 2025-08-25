@@ -3,7 +3,7 @@ import i18n from "@/assets/locales/I18n";
 import CustomInput from "@/components/input";
 import { login } from "@/services/login";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { usePathname, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useToast } from "react-native-toast-notifications";
@@ -11,18 +11,18 @@ import { useToast } from "react-native-toast-notifications";
 const {height, width} = Dimensions.get('window');
 
 export default function Login(
-    { onLogin }: { onLogin: () => void }){
-    const [username, setUsername] = useState('');
+    { onLogin }: { onLogin?: () => void }){
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
-    const pathname = usePathname();
     const toast = useToast();
     const time = 2000;
 
     async function handleLogin() {
         try {
-            const data = await login(username, password);
+            const data = await login(email, password);
             await AsyncStorage.setItem('token', data.token);
+            await AsyncStorage.setItem('username', data.username);
             await AsyncStorage.setItem('preference', JSON.stringify(data.preference));
             toast.show("Login efetuado com sucesso.", {
                 type: "success",
@@ -30,23 +30,36 @@ export default function Login(
                 duration: time,
             });
             setTimeout(() => {
-                onLogin();    
+                router.push('/(auth)')
+                // onLogin?.();
             }, time);
             
-        } catch (error) {
-            console.log(error)
-            toast.show(error, {
-                type: "error",
-                placement: "top",
-                duration: time
-            })
+        } catch (error: any) {
+        let message = "Erro ao efetuar login";
+        if (error.response && error.response.data && error.response.data.message) {
+            message = error.response.data.message;
+        } else if (error.message) {
+            message = error.message;
+        }
+        toast.show(message, {
+            type: "error",
+            placement: "top",
+            duration: time
+        });
         }
     }
 
     async function handleNewUser() {
         try {
-            console.log(pathname)
             router.push('/user')
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function handlePassword() {
+        try {
+            router.push('/password')
         } catch (err) {
             console.log(err)
         }
@@ -62,9 +75,9 @@ export default function Login(
                     height={height * 0.08}
                     width={width * 0.8}
                     inputMode="text"
-                    value={username}
-                    onChangeText={(text) => setUsername(text)}
-                    placeholder={i18n.t("username")}/>
+                    value={email}
+                    onChangeText={(text) => setEmail(text)}
+                    placeholder={i18n.t("email")}/>
                 <CustomInput
                     height={height * 0.08}
                     width={width * 0.8}
@@ -86,6 +99,7 @@ export default function Login(
                     <Text style={styles.text}>Novo usuário</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
+                    onPress={handlePassword} 
                     style={styles.buttons}>
                     <Text style={styles.text}>Recuperar senha</Text>
                 </TouchableOpacity>

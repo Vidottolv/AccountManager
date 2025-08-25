@@ -22,5 +22,8 @@ export default {
   installments: "Parcelado?",
   installmentQty: "Quantidade de parcelas",
   expirationDate: "Data de vencimento",
-  soldPrice: "Valor vendido"
+  soldPrice: "Valor vendido",
+  register: "Cadastre seu usuário!",
+  recupPasswd: "Altere sua senha!",
+  Details: "Detalhes"
 };

@@ -22,5 +22,8 @@ export default {
   installemnts: "Installments?",
   installmentQty: "Installments quantity",
   expirationDate: "Expiration date",
-  soldPrice: "Sold Price"
+  soldPrice: "Sold Price",
+  register: "Register your user!",
+  recupPasswd: "Change your password!",
+  Details: "Details"
 };

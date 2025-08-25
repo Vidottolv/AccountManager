@@ -6,6 +6,11 @@ export async function getSales() {
     return response.data;
 }
 
+// export async function getSalesByMonth(month: number, year: number) {
+//     const response = await api.post('/sales/salesByMonth', {month, year});
+//     return response.data;
+// }
+
 export async function postSales(sale: SaleRequest) {
     const response = await api.post('/sales', sale);
     return response.data;

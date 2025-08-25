@@ -9,9 +9,9 @@ import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const {height, width} = Dimensions.get('window');
-let preference: string | null;
 
 const Config = () => {
+  const [preference, setPreference] = useState<any | null>(null);
   const [open, setOpen] = useState(false); 
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const { setLanguage } = useLanguage(); 
@@ -39,25 +39,28 @@ const Config = () => {
       )
     }
   ]);  
-  useEffect(() => {
-    async function fetchPreferences() {
-      try {
-        const data = await getPreferences();
-        // console.log(data)
-        if (data && data.length > 0) {
-          setHasPreferences(true);
-          setCommission(data[0].commission);
-          setSelectedLanguage(data[0].language);
-          setLanguage(data[0].language);
-        } else {
-          setHasPreferences(false);
-        }
-      } catch (error) {
+useEffect(() => {
+  async function fetchPreferences() {
+    if (!preference) return;
+
+    try {
+      const data = await getPreferences(); 
+      if (data && data.length > 0) {
+        setHasPreferences(true);
+        setCommission(data[0].commission);
+        setSelectedLanguage(data[0].language);
+        setLanguage(data[0].language);
+      } else {
         setHasPreferences(false);
       }
+    } catch (error) {
+      console.log(error);
+      setHasPreferences(false);
     }
-    fetchPreferences();
-  }, []);
+  }
+
+  fetchPreferences();
+}, [preference]);
 
   async function handleSave() {
     // console.log(commission, selectedLanguage)
@@ -84,10 +87,12 @@ const Config = () => {
       alert('Erro ao salvar preferências');
     }
   }
-  useEffect(() => {
+
+useEffect(() => {
   async function loadPreference() {
-      const preferenceString = await AsyncStorage.getItem('preference');
-      preference = preferenceString ? JSON.parse(preferenceString) : null;
+    const preferenceString = await AsyncStorage.getItem('preference');
+    const parsedPreference = preferenceString ? JSON.parse(preferenceString) : null;
+    setPreference(parsedPreference);
   }
   loadPreference();
 }, []);
@@ -120,7 +125,12 @@ const Config = () => {
         <DropDownPicker
           open={open}
           value={selectedLanguage}
-          onChangeValue={val =>{ if(val) setLanguage(val)}}
+          onChangeValue={(val) => {
+            if (val) {
+              setSelectedLanguage(val);
+              setLanguage(val);
+            }
+          }}
           items={items}
           setOpen={setOpen}
           setValue={setSelectedLanguage}

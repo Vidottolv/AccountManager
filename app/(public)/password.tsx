@@ -1,8 +1,7 @@
 import colors from "@/assets/colors/colors";
 import i18n from "@/assets/locales/I18n";
 import CustomInput from "@/components/input";
-import { register } from "@/services/login";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { changePwd } from "@/services/login";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -10,7 +9,7 @@ import { useToast } from "react-native-toast-notifications";
 
 const {height, width} = Dimensions.get('window');
 
-export default function User(){
+export default function Password(){
     const toast = useToast();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -18,22 +17,24 @@ export default function User(){
     const [confPassword, setConfPassword] = useState('');
     const router = useRouter();
     
-    async function handleRegister() {
+    async function handleChangepwd() {
         try {
             if(password === confPassword) {
-                const response = await register(username, email, password);
+                const response = await changePwd(email, password, confPassword);
 
-                if (response.token) {
-                    await AsyncStorage.setItem('token', response.token);
-                    await AsyncStorage.setItem('preference', JSON.stringify(response.preference));
-                }
-                    toast.show(response.message || "Usuário criado com sucesso!", {
+                    toast.show(response.message || "Senha atualizada!", {
                         type: "success",
                         placement: "top",
                         duration: 1000});
                     setTimeout(() => {
-                        router.push('/(auth)');            
+                        router.push('../login');            
                     }, 1000);
+            } else {
+                toast.show("As senhas não coincidem", {
+                    type: "warning",
+                    placement: "top",
+                    duration: 1000
+                })
             }
         } catch (error: any) {
             toast.show(error.message ?? "Erro ao criar usuário", {
@@ -48,16 +49,9 @@ export default function User(){
         <View style={styles.container}>
             <ScrollView>
             <Text style={styles.mainText}>
-                Cadastre seu usuário!
+                {i18n.t('recupPasswd')}
             </Text>
             <View style={styles.inputs}>
-                <CustomInput
-                    height={height * 0.08}
-                    width={width * 0.8}
-                    inputMode="text"
-                    value={username}
-                    onChangeText={(text) => setUsername(text)}
-                    placeholder={i18n.t("username")}/>
                 <CustomInput
                     height={height * 0.08}
                     width={width * 0.8}
@@ -82,7 +76,7 @@ export default function User(){
                     placeholder={i18n.t("confPassword")}
                     passwd/>
                 <TouchableOpacity 
-                    onPress={handleRegister}
+                    onPress={handleChangepwd}
                     style={styles.button}>
                     <Text style={styles.textSave}>
                         {i18n.t("save")}
